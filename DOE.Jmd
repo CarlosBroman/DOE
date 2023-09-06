@@ -1,0 +1,135 @@
+---
+title: Design of experiments in the Julia programming language
+author: Carlos Roman
+date: 2023-09-6
+---
+
+# Index
+1. Basics
+    - Basics 1
+    - Basics 2
+    - Basics 3
+
+
+# Design of experiments (DOE)
+Design of Experiments (DOE) is a **systematic** and **structured** approach used in various fields to optimize processes, improve product quality, and enhance decision-making.
+It is a powerful tool for researchers, engineers, and professionals seeking to understand complex systems and uncover valuable insights by efficiently manipulating and observing key factors. 
+
+DOE enables practitioners to carefully plan and conduct experiments, ensuring that they obtain reliable and meaningful results while minimizing resource wastage. By systematically varying input variables and observing their impact on output responses, DOE allows for the identification of critical factors, the optimization of processes, and the development of robust models.
+
+In this markdown, we will explore the fundamental principles of Design of Experiments, including its key components, benefits, and common strategies. Whether you are involved in scientific research, industrial process improvement, or product development, understanding DOE can significantly enhance your ability to make informed decisions and achieve desired outcomes.  
+
+
+## DOE using the Julia programming language
+Design of Experiments (DOE) becomes even more powerful and versatile when coupled with a high-performance programming language like Julia. Julia's unique blend of speed, ease of use, and flexibility makes it an excellent choice for conducting sophisticated experiments and analyzing complex data.
+In this section, we will delve into the world of DOE through the lens of the Julia programming language. Julia's extensive libraries and numerical computing capabilities provide researchers and engineers with the tools needed to design, execute, and analyze experiments efficiently. Whether you are aiming to optimize a manufacturing process, fine-tune a machine learning model, or explore scientific phenomena, Julia's capabilities can help streamline your DOE efforts.
+We will explore practical examples, code snippets, and best practices for leveraging Julia in your DOE projects. By the end of this section, you'll have a solid foundation for harnessing the full potential of DOE within the Julia ecosystem, empowering you to make data-driven decisions and drive innovation in your domain.
+
+### Explanation of example 1
+In this first example, we will using a DOE to determine the optimal media for culturing tumoral and immune human cells.
+A  widely used model is the logistic growth model, which accounts for a carrying capacity or maximum population size that the tumor can reach. It can be represented by the following differential equation:
+
+$dN / dt = rN * (1 - N / K)$
+
+
+Where:
+- '$N/K$'  represents the rate of change in the number of cells over time.
+- '$r$'  is the growth rate constant.
+- '$N$'  is the number of tumor cells.
+- '$K$'  is the carrying capacity or the maximum number of cells the environment can support.
+
+The growth rate will be totally dependent on the conditions of culture, including parameters such as temperature and pH, or the media composition itself. In our experiment, we will prepare a chemically defined culture media and modify its composition to obtain the highest growth rate possible.
+
+
+### Importing Packages
+
+The first step in our project is to import the necessary Julia packages that will provide us the tools we need in our analysis.
+
+```julia
+using DataFrames
+using Plots
+using GLM
+using StatsBase
+```
+
+### Data preparation
+
+Then we will prepare our data defining the factor levels, the ones we choose based on previous experimentation or literature.
+
+```julia; results=false
+### Define factor levels
+insulin_levels = [0.5, 1.0, 2.0]
+zinc_levels = [0.75, 1.25, 1.5]
+iron_levels = [0.40, 1.0, 1.60]
+selenium_levels = [0.5, 0.75, 1.0]
+codifier = ["Low", "Medium", "High"]
+``` 
+Then we import the experimental values obtained when performing the experiments.
+
+```julia; echo=false, results=false
+### Growth rate values (replace with your actual data)
+growth_rate_values = [0.075, 0.069, 0.073, 0.080, 0.079, 0.098, 0.085, 0.099, 0.083,
+                    0.111, 0.125, 0.129, 0.126, 0.110, 0.124, 0.111, 0.115, 0.099,
+                    0.114, 0.118, 0.122, 0.119, 0.133, 0.117, 0.124, 0.138, 0.132,
+                    0.241, 0.245, 0.169, 0.271, 0.285, 0.289, 0.311, 0.345, 0.349,
+                    0.207, 0.221, 0.255, 0.297, 0.251, 0.295, 0.337, 0.391, 0.345,
+                    0.330, 0.314, 0.268, 0.330, 0.354, 0.318, 0.360, 0.414, 0.368,
+                    0.433, 0.407, 0.441, 0.623, 0.597, 0.581, 0.793, 0.857, 0.891,
+                    0.429, 0.503, 0.497, 0.679, 0.613, 0.597, 0.859, 0.843, 0.897,
+                    0.412, 0.506, 0.420, 0.692, 0.676, 0.620, 0.912, 0.906, 0.950
+                    ]
+```
+
+### Create a DataFrame for codified variables with growth rate
+
+We will store all our data in a DataFrame containing the codified variables and the growth rate. This is purely for visualization purposes.
+
+```julia; echo=false
+codified_table = DataFrame(
+    Insulin_levels = [codifier[i] for i in 1:length(insulin_levels) for _ in 1:length(zinc_levels) * length(selenium_levels) * length(iron_levels)],
+    Zinc_levels = [codifier[j] for _ in 1:length(insulin_levels) for j in 1:length(zinc_levels) for _ in 1:length(selenium_levels) * length(iron_levels)],
+    Selenium_levels = [codifier[k] for _ in 1:length(insulin_levels) * length(zinc_levels) for k in 1:length(selenium_levels) for _ in 1:length(iron_levels)],
+    Iron_levels = [codifier[l] for _ in 1:length(insulin_levels) * length(zinc_levels) * length(selenium_levels) for l in 1:length(iron_levels)],
+    GrowthRate = growth_rate_values[:]
+)
+```
+
+We will also create a DataFrame with the actual values of our variables, which will allow further analysis.
+
+```julia; echo=false, results=false
+not_codified_table = DataFrame(
+    Insulin = [n for n in insulin_levels for _ in 1:length(zinc_levels) * length(selenium_levels) * length(iron_levels)],
+    Zinc = [t for _ in 1:length(insulin_levels) for t in zinc_levels for _ in 1:length(selenium_levels) * length(iron_levels)],
+    Selenium = [s for _ in 1:length(insulin_levels) * length(zinc_levels) for s in selenium_levels for _ in 1:length(iron_levels)],
+    Iron = [i for _ in 1:length(insulin_levels) * length(zinc_levels) * length(selenium_levels) for i in iron_levels],
+    GrowthRate = growth_rate_values[:]
+)
+```
+And the fit our data to a Generalized Linear Model to obtain the coefficients and pvalues to know the effect of each of our components in the growth rate of our cells.
+```julia; echo=false
+data = not_codified_table
+model = lm(@formula(GrowthRate ~ Insulin + Zinc + Selenium + Iron), data)
+```
+
+We can visualize the effect of our components by creating a correlation bar plot.
+
+```julia; echo=false
+plotly()
+
+# Calculate the correlation matrix between independent variables and the dependent variable
+correlation_matrix = cor(Matrix(not_codified_table[:, 1:end-1]), not_codified_table[:, end])
+
+# Get the variable names (excluding the dependent variable GrowthRate)
+variable_names = names(not_codified_table[:, 1:end-1])
+
+# Create a bar plot to visualize the correlations
+bar(
+    variable_names,
+    correlation_matrix,
+    xlabel="Variables",
+    ylabel="Correlation with GrowthRate",
+    title="Correlation between Independent Variables and GrowthRate",
+    legend=false,
+    color=:blue,
+)
+```

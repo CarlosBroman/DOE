@@ -1,0 +1,49 @@
+---
+title: DOE using Julia
+author: Carlos Roman
+date: 2023-09-6
+---
+
+# What is a DOE?
+
+A Design of Experiments is an *statistical* approach to **optimize** experimental processes by ***implementing*** ...
+
+1. It can have lists
+    - List can begin
+        Neste
+        - dfrsd
+        fdfgdfg
+    - Basaaa
+    - ssss
+    end
+
+> Quotations
+
+And mathematics $f(x) = x^2$.
+
+## This is a subtitles: what is Julia markdown?
+
+A way to have *code* in addition to text, and to *run* this code as part of the text.
+
+```julia
+f = (x) -> x^2
+```
+
+We can now apply this code:
+
+```julia
+f(3)
+```
+
+Weave also support "in-line" evaluation: $f(4) = `j f(4)`$.
+
+```julia; echo=false
+using Plots
+```
+
+Let's do a plot!
+
+```julia; fig_cap="This is a plot of the function x2"
+theme(:bright)
+plot(f, xlim=(0,2), frame=:box, dpi=300)
+```

@@ -14,7 +14,16 @@ selenium_levels = [0.5, 0.75, 1.0]
 codifier = ["Low", "Medium", "High"]
 
 # Growth rate values (replace with your actual data)
-growth_rate_values = [0.16460000000000002, 0.11900000000000002, 0.07340000000000002, 0.18960000000000005, 0.14400000000000002, 0.09840000000000003, 0.2146, 0.16900000000000004, 0.12340000000000002, 0.2106, 0.165, 0.1194, 0.2356, 0.19, 0.14440000000000003, 0.2606, 0.21500000000000002, 0.1694, 0.23360000000000003, 0.188, 0.14240000000000003, 0.25860000000000005, 0.21300000000000002, 0.16740000000000005, 0.2836, 0.23800000000000002, 0.19240000000000002, 0.29059999999999997, 0.24500000000000002, 0.19940000000000002, 0.3406, 0.29500000000000004, 0.2494, 0.3906, 0.34500000000000003, 0.2994, 0.3366, 0.29100000000000004, 0.24540000000000003, 0.38660000000000005, 0.341, 0.29540000000000005, 0.4366, 0.391, 0.34540000000000004, 0.35960000000000003, 0.31400000000000006, 0.2684000000000001, 0.4096000000000001, 0.36400000000000005, 0.31840000000000007, 0.45960000000000006, 0.41400000000000003, 0.36840000000000006, 0.5426, 0.497, 0.4514, 0.6426000000000001, 0.597, 0.5514000000000001, 0.7426, 0.6970000000000001, 0.6514, 0.5886, 0.5429999999999999, 0.4974, 0.6886000000000001, 0.643, 0.5974, 0.7886, 0.743, 0.6974, 0.6116, 0.5660000000000001, 0.5204, 0.7116, 0.666, 0.6204000000000001, 0.8116000000000001, 0.766, 0.7204]
+growth_rate_values = [0.075, 0.069, 0.073, 0.080, 0.079, 0.098, 0.085, 0.099, 0.083,
+                    0.111, 0.125, 0.129, 0.126, 0.110, 0.124, 0.111, 0.115, 0.099,
+                    0.114, 0.118, 0.122, 0.119, 0.133, 0.117, 0.124, 0.138, 0.132,
+                    0.241, 0.245, 0.169, 0.271, 0.285, 0.289, 0.311, 0.345, 0.349,
+                    0.207, 0.221, 0.255, 0.297, 0.251, 0.295, 0.337, 0.391, 0.345,
+                    0.330, 0.314, 0.268, 0.330, 0.354, 0.318, 0.360, 0.414, 0.368,
+                    0.433, 0.407, 0.441, 0.623, 0.597, 0.581, 0.793, 0.857, 0.891,
+                    0.429, 0.503, 0.497, 0.679, 0.613, 0.597, 0.859, 0.843, 0.897,
+                    0.412, 0.506, 0.420, 0.692, 0.676, 0.620, 0.912, 0.906, 0.950
+                    ]
 
 # Create a DataFrame for codified variables with growth rate
 codified_table = DataFrame(
@@ -46,21 +55,19 @@ data = not_codified_table
 model = lm(@formula(GrowthRate ~ Insulin + Zinc + Selenium + Iron), data)
 print(model)
 
-# Calculate the correlation matrix for independent variables
-correlation_matrix = cor(Matrix(data[:, 1:end-1]))
+# Calculate the correlation matrix between independent variables and the dependent variable
+correlation_matrix = cor(Matrix(not_codified_table[:, 1:end-1]), not_codified_table[:, end])
 
 # Get the variable names (excluding the dependent variable GrowthRate)
-variable_names = names(data[:, 1:end-1])
+variable_names = names(not_codified_table[:, 1:end-1])
 
-# Create a correlation heatmap
-heatmap(
-    variable_names,
+# Create a bar plot to visualize the correlations
+bar(
     variable_names,
     correlation_matrix,
-    color=:viridis,
-    aspect_ratio=:equal,
-    title="Correlation Heatmap of Independent Variables",
     xlabel="Variables",
-    ylabel="Variables",
-    c=:auto,
+    ylabel="Correlation with GrowthRate",
+    title="Correlation between Independent Variables and GrowthRate",
+    legend=false,
+    color=:blue,
 )
