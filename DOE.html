@@ -3,7 +3,7 @@
 <HEAD>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Design of experiments in the Julia programming language</title>
+  <title>Design of experiments using Julia</title>
   
 
   <script type="text/x-mathjax-config">
@@ -653,20 +653,28 @@ div.title {text-align: center;}
     <div class = "row">
       <div class = "col-md-12 twelve columns">
         <div class="title">
-          <h1 class="title">Design of experiments in the Julia programming language</h1>
-          <h5>Carlos Roman</h5>
-          <h5>2023-09-06</h5>
+          <h1 class="title">Design of experiments using Julia</h1>
+          <h5>Carlos Román Baena</h5>
+          <h5>2023-09-07</h5>
         </div>
 
         <h1>Index</h1>
 <ol>
-<li><p>Basics</p>
+<li><p>Design of experiments &#40;DOE&#41;</p>
+</li>
+<li><p>DOE using the Julia programming language</p>
+</li>
+<li><p>Example 1</p>
 <ul>
-<li><p>Basics 1</p>
+<li><p>Full factorial design</p>
 </li>
-<li><p>Basics 2</p>
+<li><p>Importing packages</p>
 </li>
-<li><p>Basics 3</p>
+<li><p>Data preparation</p>
+</li>
+<li><p>Fit a Generalized Linear Model &#40;GLM&#41;</p>
+</li>
+<li><p>Visualize the results</p>
 </li>
 </ul>
 </li>
@@ -677,8 +685,8 @@ div.title {text-align: center;}
 <p>In this markdown, we will explore the fundamental principles of Design of Experiments, including its key components, benefits, and common strategies. Whether you are involved in scientific research, industrial process improvement, or product development, understanding DOE can significantly enhance your ability to make informed decisions and achieve desired outcomes.  </p>
 <h2>DOE using the Julia programming language</h2>
 <p>Design of Experiments &#40;DOE&#41; becomes even more powerful and versatile when coupled with a high-performance programming language like Julia. Julia&#39;s unique blend of speed, ease of use, and flexibility makes it an excellent choice for conducting sophisticated experiments and analyzing complex data. In this section, we will delve into the world of DOE through the lens of the Julia programming language. Julia&#39;s extensive libraries and numerical computing capabilities provide researchers and engineers with the tools needed to design, execute, and analyze experiments efficiently. Whether you are aiming to optimize a manufacturing process, fine-tune a machine learning model, or explore scientific phenomena, Julia&#39;s capabilities can help streamline your DOE efforts. We will explore practical examples, code snippets, and best practices for leveraging Julia in your DOE projects. By the end of this section, you&#39;ll have a solid foundation for harnessing the full potential of DOE within the Julia ecosystem, empowering you to make data-driven decisions and drive innovation in your domain.</p>
-<h3>Explanation of example 1</h3>
-<p>In this first example, we will using a DOE to determine the optimal media for culturing tumoral and immune human cells. A  widely used model is the logistic growth model, which accounts for a carrying capacity or maximum population size that the tumor can reach. It can be represented by the following differential equation:</p>
+<h3>Example 1</h3>
+<p>In this first example, we will using a DOE to determine the optimal media for culturing tumoral and immune human cells. A  widely used model is the logistic growth model, which accounts for a carrying capacity or maximum population size that the celss can reach. It can be represented by the following differential equation:</p>
 <p class="math">\[
 dN / dt = rN * (1 - N / K)
 \]</p>
@@ -688,13 +696,17 @@ dN / dt = rN * (1 - N / K)
 </li>
 <li><p>&#39;<span class="math">$r$</span>&#39;  is the growth rate constant.</p>
 </li>
-<li><p>&#39;<span class="math">$N$</span>&#39;  is the number of tumor cells.</p>
+<li><p>&#39;<span class="math">$N$</span>&#39;  is the number of cells.</p>
 </li>
 <li><p>&#39;<span class="math">$K$</span>&#39;  is the carrying capacity or the maximum number of cells the environment can support.</p>
 </li>
 </ul>
-<p>The growth rate will be totally dependent on the conditions of culture, including parameters such as temperature and pH, or the media composition itself. In our experiment, we will prepare a chemically defined culture media and modify its composition to obtain the highest growth rate possible.</p>
-<h3>Importing Packages</h3>
+<p>The growth rate will be totally dependent on the conditions of culture, including parameters such as temperature and pH, or the media composition itself. In our experiment, we will prepare a chemically defined culture media and modify its composition to obtain the highest growth rate possible. In the realm of experimental design, several approaches are available to efficiently investigate and understand the relationships between various factors or variables in a systematic manner. For our specific research or project, we have chosen to employ a Full Factorial Design as our chosen Design of Experiments &#40;DOE&#41; approach. A Full Factorial Design is a structured experimental approach that systematically explores the entire range of combinations of levels for each factor or variable under consideration. In simpler terms, it involves testing all possible combinations of factors at different levels to comprehensively evaluate their impact on the response or outcome variable.</p>
+<h4>Full factorial design</h4>
+<p>The primary advantage of a Full Factorial Design is its thoroughness. By examining every possible combination, it ensures that no potential interaction or effect between factors goes unnoticed. This exhaustive exploration of the design space provides a robust foundation for drawing meaningful conclusions and making data-driven decisions.</p>
+<p>However, it&#39;s important to note that the main drawback of a Full Factorial Design is its potential for high resource and time requirements, especially when dealing with a large number of factors or levels. The number of experiments can grow rapidly as the number of factors and levels increases, which can be impractical in some cases.</p>
+<p>In our specific case, we have chosen to embrace this thoroughness to gain a complete understanding of the relationships between our factors. We are committed to conducting a comprehensive series of experiments, examining all possible combinations of factors and levels to ensure that we leave no stone unturned in our quest for insights and conclusions.</p>
+<h4>Importing packages</h4>
 <p>The first step in our project is to import the necessary Julia packages that will provide us the tools we need in our analysis.</p>
 
 
@@ -707,7 +719,7 @@ dN / dt = rN * (1 - N / K)
 
 
 
-<h3>Data preparation</h3>
+<h4>Data preparation</h4>
 <p>Then we will prepare our data defining the factor levels, the ones we choose based on previous experimentation or literature.</p>
 
 
@@ -752,7 +764,6 @@ dN / dt = rN * (1 - N / K)
  0.95
 
 
-<h3>Create a DataFrame for codified variables with growth rate</h3>
 <p>We will store all our data in a DataFrame containing the codified variables and the growth rate. This is purely for visualization purposes.</p>
 
 
@@ -761,14 +772,13 @@ dN / dt = rN * (1 - N / K)
 <p>We will also create a DataFrame with the actual values of our variables, which will allow further analysis.</p>
 
 
-<table class="data-frame"><thead><tr><th></th><th>Insulin</th><th>Zinc</th><th>Selenium</th><th>Iron</th><th>GrowthRate</th></tr><tr><th></th><th>Float64</th><th>Float64</th><th>Float64</th><th>Float64</th><th>Float64</th></tr></thead><tbody><p>81 rows × 5 columns</p><tr><th>1</th><td>0.5</td><td>0.75</td><td>0.5</td><td>0.4</td><td>0.075</td></tr><tr><th>2</th><td>0.5</td><td>0.75</td><td>0.5</td><td>1.0</td><td>0.069</td></tr><tr><th>3</th><td>0.5</td><td>0.75</td><td>0.5</td><td>1.6</td><td>0.073</td></tr><tr><th>4</th><td>0.5</td><td>0.75</td><td>0.75</td><td>0.4</td><td>0.08</td></tr><tr><th>5</th><td>0.5</td><td>0.75</td><td>0.75</td><td>1.0</td><td>0.079</td></tr><tr><th>6</th><td>0.5</td><td>0.75</td><td>0.75</td><td>1.6</td><td>0.098</td></tr><tr><th>7</th><td>0.5</td><td>0.75</td><td>1.0</td><td>0.4</td><td>0.085</td></tr><tr><th>8</th><td>0.5</td><td>0.75</td><td>1.0</td><td>1.0</td><td>0.099</td></tr><tr><th>9</th><td>0.5</td><td>0.75</td><td>1.0</td><td>1.6</td><td>0.083</td></tr><tr><th>10</th><td>0.5</td><td>1.25</td><td>0.5</td><td>0.4</td><td>0.111</td></tr><tr><th>11</th><td>0.5</td><td>1.25</td><td>0.5</td><td>1.0</td><td>0.125</td></tr><tr><th>12</th><td>0.5</td><td>1.25</td><td>0.5</td><td>1.6</td><td>0.129</td></tr><tr><th>13</th><td>0.5</td><td>1.25</td><td>0.75</td><td>0.4</td><td>0.126</td></tr><tr><th>14</th><td>0.5</td><td>1.25</td><td>0.75</td><td>1.0</td><td>0.11</td></tr><tr><th>15</th><td>0.5</td><td>1.25</td><td>0.75</td><td>1.6</td><td>0.124</td></tr><tr><th>16</th><td>0.5</td><td>1.25</td><td>1.0</td><td>0.4</td><td>0.111</td></tr><tr><th>17</th><td>0.5</td><td>1.25</td><td>1.0</td><td>1.0</td><td>0.115</td></tr><tr><th>18</th><td>0.5</td><td>1.25</td><td>1.0</td><td>1.6</td><td>0.099</td></tr><tr><th>19</th><td>0.5</td><td>1.5</td><td>0.5</td><td>0.4</td><td>0.114</td></tr><tr><th>20</th><td>0.5</td><td>1.5</td><td>0.5</td><td>1.0</td><td>0.118</td></tr><tr><th>21</th><td>0.5</td><td>1.5</td><td>0.5</td><td>1.6</td><td>0.122</td></tr><tr><th>22</th><td>0.5</td><td>1.5</td><td>0.75</td><td>0.4</td><td>0.119</td></tr><tr><th>23</th><td>0.5</td><td>1.5</td><td>0.75</td><td>1.0</td><td>0.133</td></tr><tr><th>24</th><td>0.5</td><td>1.5</td><td>0.75</td><td>1.6</td><td>0.117</td></tr><tr><th>&vellip;</th><td>&vellip;</td><td>&vellip;</td><td>&vellip;</td><td>&vellip;</td><td>&vellip;</td></tr></tbody></table>
-
-<p>And the fit our data to a Generalized Linear Model to obtain the coefficients and pvalues to know the effect of each of our components in the growth rate of our cells.</p>
+<h4>Fit a Generalized Linear Model &#40;GLM&#41;</h4>
+<p>And then fit our data to a Generalized Linear Model to obtain the coefficients and pvalues to know the effect of each of our components in the growth rate of our cells.</p>
 
 <pre class="output">
-StatsModels.TableRegressionModel&#123;LinearModel&#123;GLM.LmResp&#123;Vector&#123;Float64&#125;&#125;, G
-LM.DensePredChol&#123;Float64, LinearAlgebra.CholeskyPivoted&#123;Float64, Matrix&#123;Flo
-at64&#125;, Vector&#123;Int64&#125;&#125;&#125;&#125;, Matrix&#123;Float64&#125;&#125;
+StatsModels.TableRegressionModel&#123;GLM.LinearModel&#123;GLM.LmResp&#123;Vector&#123;Float64&#125;
+&#125;, GLM.DensePredChol&#123;Float64, LinearAlgebra.CholeskyPivoted&#123;Float64, Matrix
+&#123;Float64&#125;, Vector&#123;Int64&#125;&#125;&#125;&#125;, Matrix&#123;Float64&#125;&#125;
 
 GrowthRate ~ 1 &#43; Insulin &#43; Zinc &#43; Selenium &#43; Iron
 
@@ -794,13 +804,32 @@ Iron          0.00203704   0.0184626   0.11    0.9124  -0.0347344    0.0388
 </pre>
 
 
+<h4>Visualize the results</h4>
+<p>A first step for visualization might include creating a correlation plot. To do so, we will extract the names of our variables and build a correlation matrix.</p>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>correlation_matrix</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>cor</span><span class='hljl-p'>(</span><span class='hljl-nf'>Matrix</span><span class='hljl-p'>(</span><span class='hljl-n'>not_codified_table</span><span class='hljl-p'>[</span><span class='hljl-oB'>:</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-k'>end</span><span class='hljl-oB'>-</span><span class='hljl-ni'>1</span><span class='hljl-p'>]),</span><span class='hljl-t'> </span><span class='hljl-n'>not_codified_table</span><span class='hljl-p'>[</span><span class='hljl-oB'>:</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-k'>end</span><span class='hljl-p'>])</span><span class='hljl-t'>
+</span><span class='hljl-n'>variable_names</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>names</span><span class='hljl-p'>(</span><span class='hljl-n'>not_codified_table</span><span class='hljl-p'>[</span><span class='hljl-oB'>:</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-k'>end</span><span class='hljl-oB'>-</span><span class='hljl-ni'>1</span><span class='hljl-p'>])</span>
+</pre>
+
+
+<pre class="output">
+4-element Vector&#123;String&#125;:
+ &quot;Insulin&quot;
+ &quot;Zinc&quot;
+ &quot;Selenium&quot;
+ &quot;Iron&quot;
+</pre>
+
+
 <p>We can visualize the effect of our components by creating a correlation bar plot.</p>
 
 
-<script src="https://cdn.plot.ly/plotly-2.6.3.min.js"></script>    <div id="4ac7c28d-eeb6-4ac2-be41-0475b45ca142" style="width:576px;height:384px;"></div>
+<script src="https://cdn.plot.ly/plotly-2.6.3.min.js"></script>    <div id="805b5848-b7a2-4cf1-bbe9-838dd7701455" style="width:576px;height:384px;"></div>
     <script>
     
-    Plotly.newPlot('4ac7c28d-eeb6-4ac2-be41-0475b45ca142', [
+    Plotly.newPlot('805b5848-b7a2-4cf1-bbe9-838dd7701455', [
     {
         "showlegend": true,
         "mode": "lines",
@@ -1101,6 +1130,468 @@ Iron          0.00203704   0.0184626   0.11    0.9124  -0.0347344    0.0388
     
     </script>
 
+
+<p>We can include other visualization tools such a 3D scatter plot, which allows us to view the dependent variable as a response of two independent variables.</p>
+
+
+<script src="https://cdn.plot.ly/plotly-2.6.3.min.js"></script>    <div id="d957f730-9b15-4b6d-9417-b5950ac44fa8" style="width:576px;height:384px;"></div>
+    <script>
+    
+    Plotly.newPlot('d957f730-9b15-4b6d-9417-b5950ac44fa8', [
+    {
+        "showlegend": true,
+        "mode": "markers",
+        "xaxis": "x",
+        "colorbar": {
+            "y": 0.5343605324074074,
+            "title": "",
+            "len": 0.9107736858413531,
+            "x": 0.9931649168853892
+        },
+        "name": "y1",
+        "yaxis": "y",
+        "zaxis": "z",
+        "legendgroup": "y1",
+        "z": [
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0
+        ],
+        "marker": {
+            "symbol": "circle",
+            "color": "rgba(0, 154, 250, 1.000)",
+            "line": {
+                "color": "rgba(0, 0, 0, 1.000)",
+                "width": 1
+            },
+            "size": 8
+        },
+        "y": [
+            0.075,
+            0.069,
+            0.073,
+            0.08,
+            0.079,
+            0.098,
+            0.085,
+            0.099,
+            0.083,
+            0.111,
+            0.125,
+            0.129,
+            0.126,
+            0.11,
+            0.124,
+            0.111,
+            0.115,
+            0.099,
+            0.114,
+            0.118,
+            0.122,
+            0.119,
+            0.133,
+            0.117,
+            0.124,
+            0.138,
+            0.132,
+            0.241,
+            0.245,
+            0.169,
+            0.271,
+            0.285,
+            0.289,
+            0.311,
+            0.345,
+            0.349,
+            0.207,
+            0.221,
+            0.255,
+            0.297,
+            0.251,
+            0.295,
+            0.337,
+            0.391,
+            0.345,
+            0.33,
+            0.314,
+            0.268,
+            0.33,
+            0.354,
+            0.318,
+            0.36,
+            0.414,
+            0.368,
+            0.433,
+            0.407,
+            0.441,
+            0.623,
+            0.597,
+            0.581,
+            0.793,
+            0.857,
+            0.891,
+            0.429,
+            0.503,
+            0.497,
+            0.679,
+            0.613,
+            0.597,
+            0.859,
+            0.843,
+            0.897,
+            0.412,
+            0.506,
+            0.42,
+            0.692,
+            0.676,
+            0.62,
+            0.912,
+            0.906,
+            0.95
+        ],
+        "type": "scatter3d",
+        "scene": "scene",
+        "x": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0
+        ]
+    }
+]
+, {
+    "showlegend": false,
+    "paper_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "annotations": [],
+    "height": 384,
+    "margin": {
+        "l": 0,
+        "b": 20,
+        "r": 0,
+        "t": 20
+    },
+    "plot_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "scene": {
+        "camera": {
+            "eye": {
+                "y": -1.9499999999999997,
+                "z": 1.3,
+                "x": 1.12583302491977
+            },
+            "projection": "orthographic"
+        },
+        "xaxis": {
+            "tickangle": 0,
+            "showline": true,
+            "gridcolor": "rgba(0, 0, 0, 0.100)",
+            "showticklabels": true,
+            "gridwidth": 0.5,
+            "titlefont": {
+                "color": "rgba(0, 0, 0, 1.000)",
+                "family": "sans-serif",
+                "size": 15
+            },
+            "visible": true,
+            "ticks": "inside",
+            "range": [
+                0.45499999999999996,
+                2.045
+            ],
+            "tickmode": "array",
+            "tickvals": [
+                0.6000000000000001,
+                0.9000000000000001,
+                1.2000000000000002,
+                1.5000000000000002,
+                1.8000000000000003
+            ],
+            "tickcolor": "rgb(0, 0, 0)",
+            "ticktext": [
+                "0.6",
+                "0.9",
+                "1.2",
+                "1.5",
+                "1.8"
+            ],
+            "linecolor": "rgba(0, 0, 0, 1.000)",
+            "showgrid": true,
+            "zeroline": false,
+            "type": "-",
+            "tickfont": {
+                "color": "rgba(0, 0, 0, 1.000)",
+                "family": "sans-serif",
+                "size": 11
+            },
+            "title": "Insulin",
+            "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+            "mirror": false
+        },
+        "domain": {
+            "y": [
+                0.07897368948673088,
+                0.989747375328084
+            ],
+            "x": [
+                0.07965529916399339,
+                0.9931649168853892
+            ]
+        },
+        "yaxis": {
+            "tickangle": 0,
+            "showline": true,
+            "gridcolor": "rgba(0, 0, 0, 0.100)",
+            "showticklabels": true,
+            "gridwidth": 0.5,
+            "titlefont": {
+                "color": "rgba(0, 0, 0, 1.000)",
+                "family": "sans-serif",
+                "size": 15
+            },
+            "visible": true,
+            "ticks": "inside",
+            "range": [
+                0.04256999999999994,
+                0.9764299999999999
+            ],
+            "tickmode": "array",
+            "tickvals": [
+                0.2,
+                0.4,
+                0.6000000000000001,
+                0.8
+            ],
+            "tickcolor": "rgb(0, 0, 0)",
+            "ticktext": [
+                "0.2",
+                "0.4",
+                "0.6",
+                "0.8"
+            ],
+            "linecolor": "rgba(0, 0, 0, 1.000)",
+            "showgrid": true,
+            "zeroline": false,
+            "type": "-",
+            "tickfont": {
+                "color": "rgba(0, 0, 0, 1.000)",
+                "family": "sans-serif",
+                "size": 11
+            },
+            "title": "GrowthRate",
+            "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+            "mirror": false
+        },
+        "zaxis": {
+            "tickangle": 0,
+            "showline": true,
+            "gridcolor": "rgba(0, 0, 0, 0.100)",
+            "showticklabels": true,
+            "gridwidth": 0.5,
+            "titlefont": {
+                "color": "rgba(0, 0, 0, 1.000)",
+                "family": "sans-serif",
+                "size": 15
+            },
+            "visible": true,
+            "ticks": "inside",
+            "range": [
+                0.485,
+                1.0150000000000001
+            ],
+            "tickmode": "array",
+            "tickvals": [
+                0.5,
+                0.6000000000000001,
+                0.7000000000000001,
+                0.8,
+                0.9,
+                1.0
+            ],
+            "tickcolor": "rgb(0, 0, 0)",
+            "ticktext": [
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "0.9",
+                "1.0"
+            ],
+            "linecolor": "rgba(0, 0, 0, 1.000)",
+            "showgrid": true,
+            "zeroline": false,
+            "type": "-",
+            "tickfont": {
+                "color": "rgba(0, 0, 0, 1.000)",
+                "family": "sans-serif",
+                "size": 11
+            },
+            "title": "Selenium",
+            "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+            "mirror": false
+        }
+    },
+    "width": 576
+}
+);
+    
+    </script>
+
+
+<p>To be continued...</p>
 
 
         <HR/>

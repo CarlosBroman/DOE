@@ -1,14 +1,18 @@
 ---
-title: Design of experiments in the Julia programming language
-author: Carlos Roman
-date: 2023-09-6
+title: Design of experiments using Julia
+author: Carlos Román Baena
+date: 2023-09-07
 ---
 
 # Index
-1. Basics
-    - Basics 1
-    - Basics 2
-    - Basics 3
+1. Design of experiments (DOE)
+2. DOE using the Julia programming language
+3. Example 1
+    - Full factorial design
+    - Importing packages
+    - Data preparation
+    - Fit a Generalized Linear Model (GLM)
+    - Visualize the results
 
 
 # Design of experiments (DOE)
@@ -25,9 +29,9 @@ Design of Experiments (DOE) becomes even more powerful and versatile when couple
 In this section, we will delve into the world of DOE through the lens of the Julia programming language. Julia's extensive libraries and numerical computing capabilities provide researchers and engineers with the tools needed to design, execute, and analyze experiments efficiently. Whether you are aiming to optimize a manufacturing process, fine-tune a machine learning model, or explore scientific phenomena, Julia's capabilities can help streamline your DOE efforts.
 We will explore practical examples, code snippets, and best practices for leveraging Julia in your DOE projects. By the end of this section, you'll have a solid foundation for harnessing the full potential of DOE within the Julia ecosystem, empowering you to make data-driven decisions and drive innovation in your domain.
 
-### Explanation of example 1
+### Example 1
 In this first example, we will using a DOE to determine the optimal media for culturing tumoral and immune human cells.
-A  widely used model is the logistic growth model, which accounts for a carrying capacity or maximum population size that the tumor can reach. It can be represented by the following differential equation:
+A  widely used model is the logistic growth model, which accounts for a carrying capacity or maximum population size that the celss can reach. It can be represented by the following differential equation:
 
 $dN / dt = rN * (1 - N / K)$
 
@@ -35,13 +39,22 @@ $dN / dt = rN * (1 - N / K)$
 Where:
 - '$N/K$'  represents the rate of change in the number of cells over time.
 - '$r$'  is the growth rate constant.
-- '$N$'  is the number of tumor cells.
+- '$N$'  is the number of cells.
 - '$K$'  is the carrying capacity or the maximum number of cells the environment can support.
 
 The growth rate will be totally dependent on the conditions of culture, including parameters such as temperature and pH, or the media composition itself. In our experiment, we will prepare a chemically defined culture media and modify its composition to obtain the highest growth rate possible.
+In the realm of experimental design, several approaches are available to efficiently investigate and understand the relationships between various factors or variables in a systematic manner. For our specific research or project, we have chosen to employ a Full Factorial Design as our chosen Design of Experiments (DOE) approach.
+A Full Factorial Design is a structured experimental approach that systematically explores the entire range of combinations of levels for each factor or variable under consideration. In simpler terms, it involves testing all possible combinations of factors at different levels to comprehensively evaluate their impact on the response or outcome variable.
+
+#### Full factorial design
+The primary advantage of a Full Factorial Design is its thoroughness. By examining every possible combination, it ensures that no potential interaction or effect between factors goes unnoticed. This exhaustive exploration of the design space provides a robust foundation for drawing meaningful conclusions and making data-driven decisions.
+
+However, it's important to note that the main drawback of a Full Factorial Design is its potential for high resource and time requirements, especially when dealing with a large number of factors or levels. The number of experiments can grow rapidly as the number of factors and levels increases, which can be impractical in some cases.
+
+In our specific case, we have chosen to embrace this thoroughness to gain a complete understanding of the relationships between our factors. We are committed to conducting a comprehensive series of experiments, examining all possible combinations of factors and levels to ensure that we leave no stone unturned in our quest for insights and conclusions.
 
 
-### Importing Packages
+#### Importing packages
 
 The first step in our project is to import the necessary Julia packages that will provide us the tools we need in our analysis.
 
@@ -52,7 +65,7 @@ using GLM
 using StatsBase
 ```
 
-### Data preparation
+#### Data preparation
 
 Then we will prepare our data defining the factor levels, the ones we choose based on previous experimentation or literature.
 
@@ -80,8 +93,6 @@ growth_rate_values = [0.075, 0.069, 0.073, 0.080, 0.079, 0.098, 0.085, 0.099, 0.
                     ]
 ```
 
-### Create a DataFrame for codified variables with growth rate
-
 We will store all our data in a DataFrame containing the codified variables and the growth rate. This is purely for visualization purposes.
 
 ```julia; echo=false
@@ -96,7 +107,7 @@ codified_table = DataFrame(
 
 We will also create a DataFrame with the actual values of our variables, which will allow further analysis.
 
-```julia; echo=false, results=false
+```julia; echo=false, results="hidden"
 not_codified_table = DataFrame(
     Insulin = [n for n in insulin_levels for _ in 1:length(zinc_levels) * length(selenium_levels) * length(iron_levels)],
     Zinc = [t for _ in 1:length(insulin_levels) for t in zinc_levels for _ in 1:length(selenium_levels) * length(iron_levels)],
@@ -105,24 +116,26 @@ not_codified_table = DataFrame(
     GrowthRate = growth_rate_values[:]
 )
 ```
-And the fit our data to a Generalized Linear Model to obtain the coefficients and pvalues to know the effect of each of our components in the growth rate of our cells.
+
+#### Fit a Generalized Linear Model (GLM)
+And then fit our data to a Generalized Linear Model to obtain the coefficients and pvalues to know the effect of each of our components in the growth rate of our cells.
 ```julia; echo=false
 data = not_codified_table
 model = lm(@formula(GrowthRate ~ Insulin + Zinc + Selenium + Iron), data)
 ```
 
+#### Visualize the results
+A first step for visualization might include creating a correlation plot. To do so, we will extract the names of our variables and build a correlation matrix.
+
+```julia
+correlation_matrix = cor(Matrix(not_codified_table[:, 1:end-1]), not_codified_table[:, end])
+variable_names = names(not_codified_table[:, 1:end-1])
+```
+
 We can visualize the effect of our components by creating a correlation bar plot.
 
-```julia; echo=false
+```julia; echo=false, fig_cap="Correlation between the independent variables and the dependent variable"
 plotly()
-
-# Calculate the correlation matrix between independent variables and the dependent variable
-correlation_matrix = cor(Matrix(not_codified_table[:, 1:end-1]), not_codified_table[:, end])
-
-# Get the variable names (excluding the dependent variable GrowthRate)
-variable_names = names(not_codified_table[:, 1:end-1])
-
-# Create a bar plot to visualize the correlations
 bar(
     variable_names,
     correlation_matrix,
@@ -133,3 +146,18 @@ bar(
     color=:blue,
 )
 ```
+We can include other visualization tools such a 3D scatter plot, which allows us to view the dependent variable as a response of two independent variables.
+
+```julia; echo=false, fig_cap="3D scatter plot with the main affecting factors."
+scatter3d(
+    not_codified_table.Insulin,
+    not_codified_table.GrowthRate,
+    not_codified_table.Selenium,
+    xlabel="Insulin",
+    ylabel="GrowthRate",
+    zlabel="Selenium",
+    legend=false
+)
+```
+
+To be continued...
